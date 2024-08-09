@@ -1,7 +1,14 @@
 #!/usr/bin/python3
-
+"""
+function to calculate the fewest number of operations
+"""
 
 def minOperations(n):
+
+    """Returns the fewest number of operations needed
+     to result in exactly n H characters in the file
+    """
+
     if n <= 1:
         return 0
     
@@ -13,5 +20,5 @@ def minOperations(n):
             ops += factor
             n //= factor
         factor += 1
-    
+     
     return ops
