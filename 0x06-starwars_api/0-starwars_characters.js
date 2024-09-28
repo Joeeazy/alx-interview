@@ -1,27 +1,27 @@
 #!/usr/bin/node
+
 const request = require("request");
-const API_URL = "https://swapi-api.hbtn.io/api";
 
-if (process.argv.length > 2) {
-  request(`${API_URL}/films/${process.argv[2]}/`, (err, _, body) => {
-    if (err) {
-      console.log(err);
-    }
-    const charactersURL = JSON.parse(body).characters;
-    const charactersName = charactersURL.map(
-      (url) =>
-        new Promise((resolve, reject) => {
-          request(url, (promiseErr, __, charactersReqBody) => {
-            if (promiseErr) {
-              reject(promiseErr);
-            }
-            resolve(JSON.parse(charactersReqBody).name);
-          });
-        })
-    );
+const filmNum = process.argv[2] + "/";
+const filmURL = "https://swapi-api.hbtn.io/api/films/";
 
-    Promise.all(charactersName)
-      .then((names) => console.log(names.join("\n")))
-      .catch((allErr) => console.log(allErr));
-  });
-}
+// Make request to film URL
+request(filmURL + filmNum, async function (err, res, body) {
+  if (err) return console.error(err);
+
+  // Parse body to get list of character URLs
+  const charURLList = JSON.parse(body).characters;
+
+  // Make request to each character URL
+  for (const actor of charURLList) {
+    await new Promise(function (resolve, reject) {
+      request(actor, function (err, res, body) {
+        if (err) return console.error(err);
+
+        // Parse body to get character name
+        console.log(JSON.parse(body).name);
+        resolve();
+      });
+    });
+  }
+});
